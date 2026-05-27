@@ -1,0 +1,67 @@
+{% extends "./base.html" %}
+{% block title %}
+    PASAJE
+{% endblock %}
+
+{% block body %}
+<center>
+    <article>
+        <p class="animate__animated animate__pulse animate__infinite"
+                    style="font-family: 'Comic Sans MS', sans-serif; font-size: 50px; ">SITU</p><br>
+                
+    </article>        
+</center>
+<div class="card">
+        <h1>Listado de Pasajeros</h1>
+        <hr>
+        <div class="mb-3">
+            <a href="{% url 'agregar_pasajero' %}" class="btn btn-success">+ Agregar Pasajero</a>
+        </div>
+        <div class="table-responsive py-2">
+            <table class="table table-striped table-hover table-responsive-sa">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cedula</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Telefono</th>
+                        <th>Imagen</th>
+                        <th>Correo</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in pasajeros %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{e.cedula}}</td>
+                        <td>{{e.nombre}}</td>
+                        <td>{{e.apellido}}</td>
+                        <td>{{e.telefono}}</td>
+                        
+                        <td>
+                        {% if e.imagen %}
+                            <img src="{{ e.imagen.url }}" alt="Imagen de {{ e.nombre }}" width="65" height="50">
+                        {% else %}
+                            <span>No hay imagen</span>
+                        {% endif %}
+                        </td>
+                        <td>{{e.email}}</td>
+                        <td><a href="{% url 'pasajerosEdit' e.id %}"  class="btn btn-info">Editar</a></td>
+                        <td>
+                            <form method="post" action="{% url 'eliminar_pasajero' e.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este pasajero?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+{% endblock body %}
