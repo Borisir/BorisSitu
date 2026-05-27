@@ -28,8 +28,10 @@ SECRET_KEY = 'django-insecure-af(gu6!2993md_qjot2c1pfwz=sb(q$-$xhnjhq^=_kkt@r@_7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net'
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net",
 ]
 
 STATIC_URL = '/static/'
