@@ -1,35 +1,43 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import PasajeroFormulario
 from .models import Pasajero
-from django.shortcuts import render,redirect,get_object_or_404
 
-# Create your views here.
 
 def home_view(request):
-    return render(request,"index.html",{})
+    return render(request, "index.html", {})
+
 
 def pasajeros(request):
-    data = PasajeroFormulario()    
     pasajeros = Pasajero.objects.all()
+    data = PasajeroFormulario()
+
     if request.method == 'POST':
         formulario = PasajeroFormulario(data=request.POST, files=request.FILES)
         if formulario.is_valid():
             formulario.save()
+            return redirect(to="pasajeros")  # FIX: redirigir tras guardar
+        else:
+            # FIX: mostrar el formulario con errores, no uno vacío
+            return render(request, "pasajeros.html", {"pasajeros": pasajeros, "form": formulario})
 
-    return render(request,"pasajeros.html",{"pasajeros":pasajeros, 'form':data})
+    return render(request, "pasajeros.html", {"pasajeros": pasajeros, "form": data})
+
 
 def pasajerosEdit(request, id):
-    pasajeros = get_object_or_404(Pasajero, id = id)
+    pasajero = get_object_or_404(Pasajero, id=id)
     data = {
-        'form' : PasajeroFormulario(instance=pasajeros)
+        'form': PasajeroFormulario(instance=pasajero)
     }
     if request.method == 'POST':
-        formulario = PasajeroFormulario(data=request.POST, instance=pasajeros, files=request.FILES)
+        formulario = PasajeroFormulario(data=request.POST, instance=pasajero, files=request.FILES)
         if formulario.is_valid():
             formulario.save()
             return redirect(to="pasajeros")
+        else:
+            data['form'] = formulario
 
-    return render(request,'pasajerosEdit.html',data)
+    return render(request, 'pasajerosEdit.html', data)
+
 
 def agregar_pasajero(request):
     if request.method == 'POST':
@@ -44,6 +52,6 @@ def agregar_pasajero(request):
 
 def eliminar_pasajero(request, id):
     pasajero = get_object_or_404(Pasajero, id=id)
-    if request.method == 'POST':
+    if request.method == 'POST':  # FIX: solo eliminar si es POST
         pasajero.delete()
     return redirect(to="pasajeros")
