@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = '/home/site/wwwroot/staticfiles'
 
 # Application definition
 
@@ -85,6 +85,8 @@ DATABASES = {
         'NAME': '/home/site/wwwroot/db.sqlite3',
     }
 }
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
 
 # Password validation
