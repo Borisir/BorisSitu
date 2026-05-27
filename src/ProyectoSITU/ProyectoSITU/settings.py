@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/home/site/wwwroot/media'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 print('RUTA de mi proy',BASE_DIR)
@@ -79,7 +82,7 @@ WSGI_APPLICATION = 'ProyectoSITU.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/db.sqlite3',
+        'NAME': '/home/site/wwwroot/db.sqlite3',
     }
 }
 
@@ -120,7 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "templates/static",
+    BASE_DIR / "static",
 ]
 
 # Media files (Uploaded images)
