@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/site/wwwroot/media'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 print('RUTA de mi proy',BASE_DIR)
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'ProyectoSITU.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/site/wwwroot/db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
