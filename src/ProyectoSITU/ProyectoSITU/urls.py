@@ -30,5 +30,10 @@ urlpatterns = [
     path('agregar_pasajero/', agregar_pasajero, name='agregar_pasajero')
 ]
 
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
