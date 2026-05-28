@@ -9,8 +9,6 @@ import os
 # BASE_DIR debe declararse PRIMERO antes de usarlo
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-print('RUTA de mi proy', BASE_DIR)
-
 # SECURITY WARNING: keep the secret key used in production secret!
 # Usa variable de entorno en Azure: Configuration > App Settings > SECRET_KEY
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-af(gu6!2993md_qjot2c1pfwz=sb(q$-$xhnjhq^=_kkt@r@_7')
@@ -18,21 +16,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-af(gu6!2993md_qjot2c1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net",
+    os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net').split(',')[0],
 ]
+
+HOME_DIR = Path(os.environ.get('HOME', BASE_DIR))
+PERSISTENT_DATA_DIR = Path(os.environ.get('AZURE_PERSISTENT_DATA', HOME_DIR / 'data'))
+PERSISTENT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # =============================================================
 # BASE DE DATOS
-# SQLite guardado en /home/ que es el ÚNICO directorio persistente
-# en Azure App Service. Si se guarda en wwwroot se pierde al reiniciar.
+# SQLite guardado en /home/data, que es persistente en Azure App Service.
 # =============================================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/db.sqlite3',
+        'NAME': PERSISTENT_DATA_DIR / 'db.sqlite3',
     }
 }
 
@@ -41,15 +42,13 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (imágenes subidas por usuarios)
-# También deben ir a /home/ para que sean persistentes
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/media/'
+MEDIA_ROOT = PERSISTENT_DATA_DIR / 'media'
 
 # Application definition
 INSTALLED_APPS = [
@@ -78,7 +77,7 @@ ROOT_URLCONF = 'ProyectoSITU.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, "templates"],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

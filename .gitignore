@@ -1,7 +1,32 @@
-echo "venv/
+# Python
+venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.sqlite3
 db.sqlite3
-__MACOSX/
+src/ProyectoSITU/db.sqlite3
+
+# Django
+staticfiles/
 .DS_Store
-*.sqlite3" > .gitignore
+
+# OS
+Thumbs.db
+__MACOSX/
+
+# Environment
+.env
+
+# Azure
+*.deployment
+
+# IDE
+.vscode/
+
+# Local virtual environments
+src/ProyectoSITU/venv/
+
+# Ignore generated files
+*.log
