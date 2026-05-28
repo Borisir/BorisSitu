@@ -18,18 +18,25 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-af(gu6!2993md_qjot2c1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+# Parse ALLOWED_HOSTS from environment or use defaults
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net')
+ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',')]
 
-CSRF_TRUSTED_ORIGINS = [
-    os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net'),
-]
+# Parse CSRF_TRUSTED_ORIGINS from environment or use defaults
+csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net,https://localhost:8000')
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_trusted_env.split(',')]
 
 # =============================================================
 # PERSISTENT DATA DIRECTORIES (Azure Compatible)
 # Use /home/ as it's the only persistent directory in Azure App Service
 # =============================================================
-HOME_DIR = Path(os.environ.get('HOME', '/home/site/wwwroot'))
-DATA_DIR = HOME_DIR / 'situ_data'
+# In Azure App Service, /home/ is persistent, /home/site/wwwroot is transient
+if os.path.exists('/home/situ_data'):
+    DATA_DIR = Path('/home/situ_data')
+else:
+    # Fallback for local development
+    DATA_DIR = Path(os.environ.get('HOME', BASE_DIR)) / 'situ_data'
+
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 DB_DIR = DATA_DIR / 'db'
@@ -38,9 +45,7 @@ DB_DIR.mkdir(parents=True, exist_ok=True)
 MEDIA_DIR = DATA_DIR / 'media'
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
-logger.info(f'Data directory: {DATA_DIR}')
-logger.info(f'Database directory: {DB_DIR}')
-logger.info(f'Media directory: {MEDIA_DIR}')
+logger.info(f'Using data directory: {DATA_DIR}')
 
 # =============================================================
 # DATABASE CONFIGURATION
@@ -63,6 +68,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 STATICFILES_DIRS = [str(BASE_DIR / 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 # =============================================================
 # MEDIA FILES CONFIGURATION (User Uploads)
