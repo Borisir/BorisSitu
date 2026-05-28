@@ -18,13 +18,25 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-af(gu6!2993md_qjot2c1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
 
-# Parse ALLOWED_HOSTS from environment or use defaults
-allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net')
-ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',')]
+WEBSITE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME', '')
 
-# Parse CSRF_TRUSTED_ORIGINS from environment or use defaults
-csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://boris-situ-hjdddag5hrffg8g5.centralus-01.azurewebsites.net,https://localhost:8000')
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_trusted_env.split(',')]
+default_hosts = ['localhost', '127.0.0.1']
+if WEBSITE_HOSTNAME:
+    default_hosts.append(WEBSITE_HOSTNAME)
+
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', ','.join(default_hosts))
+ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
+if WEBSITE_HOSTNAME and WEBSITE_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(WEBSITE_HOSTNAME)
+
+csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_trusted_env.split(',') if o.strip()]
+if WEBSITE_HOSTNAME:
+    azure_origin = f'https://{WEBSITE_HOSTNAME}'
+    if azure_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(azure_origin)
+if not CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
 
 # =============================================================
 # PERSISTENT DATA DIRECTORIES (Azure Compatible)
